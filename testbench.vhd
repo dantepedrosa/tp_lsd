@@ -1,3 +1,11 @@
+-- AULA 12 - TRABALHO PRÁTICO FINAL
+-- arquivo: testbench.vhd
+-- Testbench para relógio/cronômetro (watch/stopwatch)
+-- Desenvolvido por:
+-- Dante Junqueira Pedrosa
+-- Maria Eduarda Jotadiemel Antunes
+-- Laboratório de Sistemas Digitais - Turma PN1
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 
@@ -6,7 +14,7 @@ end testbench;
 
 architecture tb of testbench is
 
-    -- clock 1 Hz artificial para simulacao rapida
+    -- clock 10 Hz apenas para simulacao
     constant CLK_PERIOD : time := 100 ms;
 
     signal clk_1hz    : std_logic := '0';
@@ -22,9 +30,6 @@ architecture tb of testbench is
 
 begin
 
-    --------------------------------------------------------------------
-    -- DUT (Device Under Test)
-    --------------------------------------------------------------------
     uut: entity work.datapath
         port map(
             clk_1hz    => clk_1hz,
@@ -38,9 +43,8 @@ begin
             sseg4      => s4
         );
 
-    --------------------------------------------------------------------
-    -- Clock 1 Hz artificial (100 ms)
-    --------------------------------------------------------------------
+
+    -- clock 10 Hz para simulacao
     clk_gen : process
     begin
         while now < 60 sec loop
@@ -52,20 +56,17 @@ begin
         wait;
     end process;
 
-    --------------------------------------------------------------------
-    -- Sequencia de ensaios
-    --------------------------------------------------------------------
     stim : process
     begin
         ------------------------------------------------------------
-        -- 1) RELogio por 15 segundos
+        -- 1 - Relogio por 15 segundos
         ------------------------------------------------------------
         watch_mode <= '1';   -- modo relogio
         stpwtch_en <= '0';
         wait for 15 sec;
 
         ------------------------------------------------------------
-        -- 2) Modo timer: iniciar, esperar 10 s, pausar, resetar
+        -- 2) Modo timer: inicia, roda por 10s, pausa e reseta
         ------------------------------------------------------------
         watch_mode <= '0';   -- muda para modo timer
 
@@ -88,15 +89,12 @@ begin
         wait for 2 sec;
 
         ------------------------------------------------------------
-        -- 3) Voltar para relogio por mais 15 s
+        -- 3) Voltar para relogio por 15 s
         ------------------------------------------------------------
         watch_mode <= '1';   -- volta relogio
         stpwtch_en <= '0';
         wait for 15 sec;
 
-        ------------------------------------------------------------
-        -- Fim da simulacao
-        ------------------------------------------------------------
         wait;
     end process;
 

@@ -1,6 +1,3 @@
-library IEEE;
-use IEEE.std_logic_1164.all;
-
 --
 -- BCD to 7-Segment Decoder: Implemented as combinatorial circuit.
 -- Outputs are active low; Hex outputs are included. The SSEG format
@@ -11,6 +8,9 @@ use IEEE.std_logic_1164.all;
 -- SSEG: out std_logic_vector(6 downto 0);
 --
 -- Exemplo retirado do livro VHDL Caipira
+
+library IEEE;
+use IEEE.std_logic_1164.all;
 
 entity decoder is
     port (

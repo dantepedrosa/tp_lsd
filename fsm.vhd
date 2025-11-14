@@ -1,3 +1,11 @@
+-- AULA 12 - TRABALHO PRÁTICO FINAL
+-- arquivo: fsm.vhd
+-- FSM para relógio/cronômetro (watch/stopwatch)
+-- Desenvolvido por:
+-- Dante Junqueira Pedrosa
+-- Maria Eduarda Jotadiemel Antunes
+-- Laboratório de Sistemas Digitais - Turma PN1
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 

@@ -1,3 +1,11 @@
+-- AULA 12 - TRABALHO PRÁTICO FINAL
+-- arquivo: design.vhd
+-- Design top-level para relógio/cronômetro (watch/stopwatch)
+-- Desenvolvido por:
+-- Dante Junqueira Pedrosa
+-- Maria Eduarda Jotadiemel Antunes
+-- Laboratório de Sistemas Digitais - Turma PN1
+
 library ieee;
 use ieee.std_logic_1164.all;
 
