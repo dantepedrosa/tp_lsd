@@ -1,10 +1,10 @@
--- AULA 12 - TRABALHO PRÁTICO FINAL
+-- AULA 12 - TRABALHO PRATICO FINAL
 -- arquivo: counter.vhd
--- Contador genérico
+-- Contador generico com valor maximo configuravel
 -- Desenvolvido por:
 -- Dante Junqueira Pedrosa
 -- Maria Eduarda Jotadiemel Antunes
--- Laboratório de Sistemas Digitais - Turma PN1
+-- Laboratorio de Sistemas Digitais - Turma PN1
 
 library IEEE;
 use IEEE.std_logic_1164.all;
@@ -12,38 +12,48 @@ use IEEE.numeric_std.all;
 
 entity counter is
     generic (
-        N : integer := 4
+        N : integer := 4;
+        MAX_VALUE : natural := 9
     );
     port (
-        CLEAR : in  std_logic;  -- reset assincrono
+        CLEAR : in  std_logic;  -- reset assincrono ativo em '1'
         CLK   : in  std_logic;  -- clock
-        COUNT : in  std_logic;  -- habilita contagem
-        LD    : in  std_logic;  -- load do valor em DIN
-        DIN   : in  std_logic_vector(N-1 downto 0); -- valor a ser carregado
-        Q     : out std_logic_vector(N-1 downto 0); -- saída
-        COUT  : out std_logic   -- carry out
+        COUNT : in  std_logic;  -- habilita contagem quando '1'
+        Q     : out std_logic_vector(N-1 downto 0);  -- saida do contador (valor atual)
+        COUT  : out std_logic  -- carry-out ao chegar em MAX_VALUE
     );
 end counter;
 
-architecture my_count of counter is
-    signal t_cnt : unsigned(N-1 downto 0) := (others => '0');
+architecture rtl of counter is
+    -- sinais usados internamente
+    signal cnt : unsigned(N-1 downto 0) := (others => '0');
+    signal COUT_reg : std_logic := '0'; 
+
 begin
 
     process (CLK, CLEAR)
     begin
         if CLEAR = '1' then
-            t_cnt <= (others => '0');
+            cnt <= (others => '0');
+            COUT_reg <= '0';
+
         elsif rising_edge(CLK) then
-            if LD = '1' then
-                t_cnt <= unsigned(DIN);
-            elsif COUNT = '1' then
-                t_cnt <= t_cnt + 1;
+            if COUNT = '1' then
+                if cnt = MAX_VALUE then
+                    cnt <= (others => '0');
+                    COUT_reg <= '1';  -- carry out
+                else
+                    cnt <= cnt + 1;
+                    COUT_reg <= '0';
+                end if;
+            else
+                COUT_reg <= '0';
             end if;
         end if;
     end process;
 
-    Q <= std_logic_vector(t_cnt);
+    Q <= std_logic_vector(cnt);
+    COUT <= COUT_reg;
 
-    COUT <= '1' when (t_cnt = (2**N - 1) and COUNT = '1') else '0';
 
-end my_count;
+end rtl;
