@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
-entity watch_stpwtch_datapath is
+entity datapath is
     port (
         clk_1hz    : in  std_logic;
 
@@ -18,9 +18,9 @@ entity watch_stpwtch_datapath is
         sseg3 : out std_logic_vector(6 downto 0); -- centenas
         sseg4 : out std_logic_vector(6 downto 0)  -- milhares
     );
-end watch_stpwtch_datapath;
+end datapath;
 
-architecture rtl of watch_stpwtch_datapath is
+architecture rtl of datapath is
 
     --------------------------------------------------------------------
     -- sinais internos dos contadores do stopwatch
