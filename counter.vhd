@@ -15,13 +15,13 @@ entity counter is
         N : integer := 4
     );
     port (
-        CLEAR : in  std_logic;
-        CLK   : in  std_logic;
-        COUNT : in  std_logic;
-        LD    : in  std_logic;
-        DIN   : in  std_logic_vector(N-1 downto 0);
-        Q     : out std_logic_vector(N-1 downto 0);
-        COUT  : out std_logic
+        CLEAR : in  std_logic;  -- reset assincrono
+        CLK   : in  std_logic;  -- clock
+        COUNT : in  std_logic;  -- habilita contagem
+        LD    : in  std_logic;  -- load do valor em DIN
+        DIN   : in  std_logic_vector(N-1 downto 0); -- valor a ser carregado
+        Q     : out std_logic_vector(N-1 downto 0); -- saída
+        COUT  : out std_logic   -- carry out
     );
 end counter;
 
