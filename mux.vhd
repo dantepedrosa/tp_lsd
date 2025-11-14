@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 
 entity mux_2x1 is
     generic (
-        N : integer := 6  -- número de bits (padrão = 6)
+        N : integer := 4  -- número de bits (padrão = 6)
       );
     port (
         A	: in unsigned(N-1 downto 0);
