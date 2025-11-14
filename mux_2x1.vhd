@@ -4,13 +4,13 @@ use ieee.numeric_std.all;
 
 entity mux_2x1 is
     generic (
-        N : integer := 4  -- número de bits (padrão = 6)
-      );
+        N : integer := 4
+    );
     port (
-        A	: in unsigned(N-1 downto 0);
-        B	: in unsigned(N-1 downto 0);
-        sel : in STD_LOGIC;
-          dout : out unsigned(N-1 downto 0)
+        A   : in unsigned(N-1 downto 0);
+        B   : in unsigned(N-1 downto 0);
+        sel : in std_logic;
+        dout : out unsigned(N-1 downto 0)
     );
 end mux_2x1;
 

@@ -6,214 +6,209 @@ entity datapath is
     port (
         clk_1hz    : in  std_logic;
 
-        -- sinais vindos da FSM
         watch_mode : in  std_logic;
         stpwtch_en : in  std_logic;
         set_hour   : in  std_logic;
         action     : in  std_logic;
 
-        -- saidas finais dos displays
-        sseg1 : out std_logic_vector(6 downto 0); -- unidades
-        sseg2 : out std_logic_vector(6 downto 0); -- dezenas
-        sseg3 : out std_logic_vector(6 downto 0); -- centenas
-        sseg4 : out std_logic_vector(6 downto 0)  -- milhares
+        sseg1 : out std_logic_vector(6 downto 0);
+        sseg2 : out std_logic_vector(6 downto 0);
+        sseg3 : out std_logic_vector(6 downto 0);
+        sseg4 : out std_logic_vector(6 downto 0)
     );
 end datapath;
 
 architecture rtl of datapath is
 
-    --------------------------------------------------------------------
-    -- sinais internos dos contadores do stopwatch
-    --------------------------------------------------------------------
-    signal stp_sec1_bcd  : unsigned(3 downto 0);
-    signal stp_sec2_bcd  : unsigned(3 downto 0);
-    signal stp_min1_bcd  : unsigned(3 downto 0);
-    signal stp_min2_bcd  : unsigned(3 downto 0);
+    -- raw bcd outputs (unsigned)
+    signal stp_sec1_bcd, stp_sec2_bcd, stp_min1_bcd, stp_min2_bcd : unsigned(3 downto 0);
+    signal stp_sec1_cout, stp_sec2_cout, stp_min1_cout, stp_min2_cout : std_logic;
 
-    signal stp_sec1_cout : std_logic;
-    signal stp_sec2_cout : std_logic;
-    signal stp_min1_cout : std_logic;
-    signal stp_min2_cout : std_logic;
+    signal w_sec_bcd, w_min1_bcd, w_min2_bcd, w_hour1_bcd, w_hour2_bcd : unsigned(3 downto 0);
+    signal w_sec_cout, w_min1_cout, w_min2_cout, w_hour1_cout, w_hour2_cout : std_logic;
 
-    --------------------------------------------------------------------
-    -- sinais internos dos contadores do watch
-    --------------------------------------------------------------------
-    signal w_sec_bcd     : unsigned(3 downto 0);
-    signal w_min1_bcd    : unsigned(3 downto 0);
-    signal w_min2_bcd    : unsigned(3 downto 0);
-    signal w_hour1_bcd   : unsigned(3 downto 0);
-    signal w_hour2_bcd   : unsigned(3 downto 0);
+    -- converted bcd for port map (std_logic_vector)
+    signal stp_sec1_q, stp_sec2_q, stp_min1_q, stp_min2_q : std_logic_vector(3 downto 0);
+    signal w_sec_q, w_min1_q, w_min2_q, w_hour1_q, w_hour2_q : std_logic_vector(3 downto 0);
 
-    signal w_sec_cout    : std_logic;
-    signal w_min1_cout   : std_logic;
-    signal w_min2_cout   : std_logic;
-    signal w_hour1_cout  : std_logic;
-    signal w_hour2_cout  : std_logic;
-
-    --------------------------------------------------------------------
-    -- sinais dos multiplexadores 2x1
-    --------------------------------------------------------------------
+    -- mux outputs
     signal mux1_bcd, mux2_bcd, mux3_bcd, mux4_bcd : unsigned(3 downto 0);
+    signal mux1_vec, mux2_vec, mux3_vec, mux4_vec : std_logic_vector(3 downto 0);
+
+    -- aux signals for ORs that cannot be used directly in port map
+    signal w_min1_clk  : std_logic;
+    signal w_hour1_clk : std_logic;
 
 begin
 
-    --------------------------------------------------------------------
-    -- STOPWATCH CONTADORES
-    --------------------------------------------------------------------
+    -- conversion to std_logic_vector (mandatory)
+    stp_sec1_q <= std_logic_vector(stp_sec1_bcd);
+    stp_sec2_q <= std_logic_vector(stp_sec2_bcd);
+    stp_min1_q <= std_logic_vector(stp_min1_bcd);
+    stp_min2_q <= std_logic_vector(stp_min2_bcd);
 
-    -- unidade de segundos (0..9)
+    w_sec_q    <= std_logic_vector(w_sec_bcd);
+    w_min1_q   <= std_logic_vector(w_min1_bcd);
+    w_min2_q   <= std_logic_vector(w_min2_bcd);
+    w_hour1_q  <= std_logic_vector(w_hour1_bcd);
+    w_hour2_q  <= std_logic_vector(w_hour2_bcd);
+
+    -- aux clock signals (cannot OR inside port map)
+    w_min1_clk  <= w_sec_cout or (set_hour and action);
+    w_hour1_clk <= w_min2_cout or (set_hour and action);
+
+    -------------------------------------------------------------
+    -- STOPWATCH
+    -------------------------------------------------------------
+
     stp_sec1: entity work.counter
         generic map(N => 4)
         port map(
-            clk   => clk_1hz,
-            clr   => '1',              -- reset automatico interno (contador deve tratar)
-            count => stpwtch_en,
-            cout  => stp_sec1_cout,
-            bcd   => stp_sec1_bcd
+            CLK   => clk_1hz,
+            CLEAR => '0',
+            COUNT => stpwtch_en,
+            LD    => '0',
+            DIN   => (others => '0'),
+            COUT  => stp_sec1_cout,
+            Q     => stp_sec1_q
         );
 
-    -- dezenas de segundos (0..5)
     stp_sec2: entity work.counter
         generic map(N => 4)
         port map(
-            clk   => stp_sec1_cout,
-            clr   => '1',
-            count => '1',
-            cout  => stp_sec2_cout,
-            bcd   => stp_sec2_bcd
+            CLK   => stp_sec1_cout,
+            CLEAR => '0',
+            COUNT => '1',
+            LD    => '0',
+            DIN   => (others => '0'),
+            COUT  => stp_sec2_cout,
+            Q     => stp_sec2_q
         );
 
-    -- unidade de minutos (0..9)
     stp_min1: entity work.counter
         generic map(N => 4)
         port map(
-            clk   => stp_sec2_cout,
-            clr   => '1',
-            count => '1',
-            cout  => stp_min1_cout,
-            bcd   => stp_min1_bcd
+            CLK   => stp_sec2_cout,
+            CLEAR => '0',
+            COUNT => '1',
+            LD    => '0',
+            DIN   => (others => '0'),
+            COUT  => stp_min1_cout,
+            Q     => stp_min1_q
         );
 
-    -- dezenas de minutos (0..5)
     stp_min2: entity work.counter
         generic map(N => 4)
         port map(
-            clk   => stp_min1_cout,
-            clr   => '1',
-            count => '1',
-            cout  => stp_min2_cout,
-            bcd   => stp_min2_bcd
+            CLK   => stp_min1_cout,
+            CLEAR => '0',
+            COUNT => '1',
+            LD    => '0',
+            DIN   => (others => '0'),
+            COUT  => stp_min2_cout,
+            Q     => stp_min2_q
         );
 
-    --------------------------------------------------------------------
-    -- WATCH CONTADORES
-    --------------------------------------------------------------------
+    -------------------------------------------------------------
+    -- WATCH
+    -------------------------------------------------------------
 
-    -- segundos (0..59)
     w_sec: entity work.counter
         generic map(N => 4)
         port map(
-            clk   => clk_1hz,
-            clr   => '1',
-            count => '1',
-            cout  => w_sec_cout,
-            bcd   => w_sec_bcd
+            CLK   => clk_1hz,
+            CLEAR => '0',
+            COUNT => '1',
+            LD    => '0',
+            DIN   => (others => '0'),
+            COUT  => w_sec_cout,
+            Q     => w_sec_q
         );
 
-    -- unidades de minutos (clk = cout anterior OR set_hour AND action)
     w_min1: entity work.counter
         generic map(N => 4)
         port map(
-            clk   => w_sec_cout or (set_hour and action),
-            clr   => '1',
-            count => '1',
-            cout  => w_min1_cout,
-            bcd   => w_min1_bcd
+            CLK   => w_min1_clk,
+            CLEAR => '0',
+            COUNT => '1',
+            LD    => '0',
+            DIN   => (others => '0'),
+            COUT  => w_min1_cout,
+            Q     => w_min1_q
         );
 
-    -- dezenas de minutos
     w_min2: entity work.counter
         generic map(N => 4)
         port map(
-            clk   => w_min1_cout,
-            clr   => '1',
-            count => '1',
-            cout  => w_min2_cout,
-            bcd   => w_min2_bcd
+            CLK   => w_min1_cout,
+            CLEAR => '0',
+            COUNT => '1',
+            LD    => '0',
+            DIN   => (others => '0'),
+            COUT  => w_min2_cout,
+            Q     => w_min2_q
         );
 
-    -- unidades de horas (clk = cout anterior OR set_hour AND action)
     w_hour1: entity work.counter
         generic map(N => 4)
         port map(
-            clk   => w_min2_cout or (set_hour and action),
-            clr   => '1',
-            count => '1',
-            cout  => w_hour1_cout,
-            bcd   => w_hour1_bcd
+            CLK   => w_hour1_clk,
+            CLEAR => '0',
+            COUNT => '1',
+            LD    => '0',
+            DIN   => (others => '0'),
+            COUT  => w_hour1_cout,
+            Q     => w_hour1_q
         );
 
-    -- dezenas de horas
     w_hour2: entity work.counter
         generic map(N => 4)
         port map(
-            clk   => w_hour1_cout,
-            clr   => '1',
-            count => '1',
-            cout  => w_hour2_cout,
-            bcd   => w_hour2_bcd
+            CLK   => w_hour1_cout,
+            CLEAR => '0',
+            COUNT => '1',
+            LD    => '0',
+            DIN   => (others => '0'),
+            COUT  => w_hour2_cout,
+            Q     => w_hour2_q
         );
 
-    --------------------------------------------------------------------
-    -- MULTIPLEXADORES (watch_mode seleciona o que vai pro display)
-    --------------------------------------------------------------------
+    -------------------------------------------------------------
+    -- MUXES
+    -------------------------------------------------------------
 
-    -- MUX1: unidades de minutos watch / unidades de segundos stopwatch
     mux1: entity work.mux_2x1
         generic map(N => 4)
-        port map(
-            A   => stp_sec1_bcd,
-            B   => w_min1_bcd,
-            sel => watch_mode,
-            dout => mux1_bcd
-        );
+        port map(A => stp_sec1_bcd, B => w_min1_bcd, sel => watch_mode, dout => mux1_bcd);
 
-    -- MUX2: dezenas de minutos watch / dezenas de segundos stopwatch
     mux2: entity work.mux_2x1
         generic map(N => 4)
-        port map(
-            A   => stp_sec2_bcd,
-            B   => w_min2_bcd,
-            sel => watch_mode,
-            dout => mux2_bcd
-        );
+        port map(A => stp_sec2_bcd, B => w_min2_bcd, sel => watch_mode, dout => mux2_bcd);
 
-    -- MUX3: unidades de horas watch / unidades de minutos stopwatch
     mux3: entity work.mux_2x1
         generic map(N => 4)
-        port map(
-            A   => stp_min1_bcd,
-            B   => w_hour1_bcd,
-            sel => watch_mode,
-            dout => mux3_bcd
-        );
+        port map(A => stp_min1_bcd, B => w_hour1_bcd, sel => watch_mode, dout => mux3_bcd);
 
-    -- MUX4: dezenas de horas watch / dezenas de minutos stopwatch
     mux4: entity work.mux_2x1
         generic map(N => 4)
-        port map(
-            A   => stp_min2_bcd,
-            B   => w_hour2_bcd,
-            sel => watch_mode,
-            dout => mux4_bcd
-        );
+        port map(A => stp_min2_bcd, B => w_hour2_bcd, sel => watch_mode, dout => mux4_bcd);
 
-    --------------------------------------------------------------------
-    -- DECODIFICADORES DOS DISPLAYS
-    --------------------------------------------------------------------
-    dec1: entity work.decoder port map(BCD_IN => std_logic_vector(mux1_bcd), SSEG => sseg1);
-    dec2: entity work.decoder port map(BCD_IN => std_logic_vector(mux2_bcd), SSEG => sseg2);
-    dec3: entity work.decoder port map(BCD_IN => std_logic_vector(mux3_bcd), SSEG => sseg3);
-    dec4: entity work.decoder port map(BCD_IN => std_logic_vector(mux4_bcd), SSEG => sseg4);
+    -------------------------------------------------------------
+    -- VECTORS FOR DECODER
+    -------------------------------------------------------------
+
+    mux1_vec <= std_logic_vector(mux1_bcd);
+    mux2_vec <= std_logic_vector(mux2_bcd);
+    mux3_vec <= std_logic_vector(mux3_bcd);
+    mux4_vec <= std_logic_vector(mux4_bcd);
+
+    -------------------------------------------------------------
+    -- DECODERS
+    -------------------------------------------------------------
+
+    dec1: entity work.decoder port map(BCD_IN => mux1_vec, SSEG => sseg1);
+    dec2: entity work.decoder port map(BCD_IN => mux2_vec, SSEG => sseg2);
+    dec3: entity work.decoder port map(BCD_IN => mux3_vec, SSEG => sseg3);
+    dec4: entity work.decoder port map(BCD_IN => mux4_vec, SSEG => sseg4);
 
 end rtl;
