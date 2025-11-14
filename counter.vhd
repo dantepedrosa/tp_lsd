@@ -6,7 +6,7 @@ use IEEE.numeric_std.all;
 
 entity counter is
     generic (
-        N : integer := 8               -- numero de bits
+        N : integer := 4               -- numero de bits
     );
     port (
         CLEAR : in  std_logic;                     -- reset assincrono
