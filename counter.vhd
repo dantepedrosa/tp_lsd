@@ -18,7 +18,7 @@ entity counter is
 end counter;
 
 architecture my_count of counter is
-    signal t_cnt : unsigned(N-1 downto 0);
+    signal t_cnt : unsigned(N-1 downto 0) := (others => '0');
 begin
 
     process (CLK, CLEAR)

@@ -41,17 +41,19 @@ architecture rtl of datapath is
 
 begin
 
-    -- conversion to std_logic_vector (mandatory)
-    stp_sec1_q <= std_logic_vector(stp_sec1_bcd);
-    stp_sec2_q <= std_logic_vector(stp_sec2_bcd);
-    stp_min1_q <= std_logic_vector(stp_min1_bcd);
-    stp_min2_q <= std_logic_vector(stp_min2_bcd);
+    -- convert counter outputs (std_logic_vector Q) into unsigned BCD used by muxes
+    -- counters drive the _q signals (std_logic_vector). The muxes/decoder use unsigned BCD
+    -- so assign the *_bcd signals from the corresponding *_q using unsigned(...).
+    stp_sec1_bcd <= unsigned(stp_sec1_q);
+    stp_sec2_bcd <= unsigned(stp_sec2_q);
+    stp_min1_bcd <= unsigned(stp_min1_q);
+    stp_min2_bcd <= unsigned(stp_min2_q);
 
-    w_sec_q    <= std_logic_vector(w_sec_bcd);
-    w_min1_q   <= std_logic_vector(w_min1_bcd);
-    w_min2_q   <= std_logic_vector(w_min2_bcd);
-    w_hour1_q  <= std_logic_vector(w_hour1_bcd);
-    w_hour2_q  <= std_logic_vector(w_hour2_bcd);
+    w_sec_bcd    <= unsigned(w_sec_q);
+    w_min1_bcd   <= unsigned(w_min1_q);
+    w_min2_bcd   <= unsigned(w_min2_q);
+    w_hour1_bcd  <= unsigned(w_hour1_q);
+    w_hour2_bcd  <= unsigned(w_hour2_q);
 
     -- aux clock signals (cannot OR inside port map)
     w_min1_clk  <= w_sec_cout or (set_hour and action);

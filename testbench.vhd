@@ -6,46 +6,55 @@ end testbench;
 
 architecture tb of testbench is
 
-    signal clk        : std_logic := '0';
-    signal btn_mode   : std_logic := '0';
-    signal btn_action : std_logic := '0';
+    -- clock de simulacao
+    constant CLK_PERIOD : time := 100 ms;
+
+    signal clk_1hz    : std_logic := '0';
+
+    -- sinais da datapath
+    signal watch_mode : std_logic := '1';  -- modo relogio
+    signal stpwtch_en : std_logic := '0';
+    signal set_hour   : std_logic := '0';
+    signal action     : std_logic := '0';
 
     signal s1, s2, s3, s4 : std_logic_vector(6 downto 0);
 
 begin
 
-    uut: entity work.top
+    -- DUT (somente datapath)
+    uut: entity work.datapath
         port map(
-            clk_in     => clk,
-            btn_mode   => btn_mode,
-            btn_action => btn_action,
+            clk_1hz    => clk_1hz,
+            watch_mode => watch_mode,
+            stpwtch_en => stpwtch_en,
+            set_hour   => set_hour,
+            action     => action,
             sseg1      => s1,
             sseg2      => s2,
             sseg3      => s3,
             sseg4      => s4
         );
 
+    --------------------------------------------------------------------
+    -- Clock 1 Hz artificial (100 ms = 0.1 s)
+    --------------------------------------------------------------------
     clk_gen : process
     begin
-        clk <= '0';
-        wait for 500 ms;
-        clk <= '1';
-        wait for 500 ms;
+        while now < 200 sec loop
+            clk_1hz <= '0';
+            wait for CLK_PERIOD / 2;
+            clk_1hz <= '1';
+            wait for CLK_PERIOD / 2;
+        end loop;
+        wait;
     end process;
 
+    --------------------------------------------------------------------
+    -- Nenhum estimulo extra: apenas deixa o relogio contar
+    --------------------------------------------------------------------
     stim : process
     begin
-        wait for 2 sec;
-        btn_mode <= '1';
-        wait for 1 sec;
-        btn_mode <= '0';
-
-        wait for 3 sec;
-        btn_action <= '1';
-        wait for 1 sec;
-        btn_action <= '0';
-
-        wait;
+        wait; -- nada a fazer, apenas observar a contagem
     end process;
 
 end tb;

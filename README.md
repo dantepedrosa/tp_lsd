@@ -207,3 +207,11 @@ end my_fsmx;
 
 Quero apennas que siga a mesma estrutura lógica, altere os nomes dos estados, variáveis para condizer com a FSM já definida.
 
+# Testbench
+
+Para o testbench, será necessário realizar os seugintes ensaios:
+
+
+- Deixar relógio rodando por 15 segundos
+- Mudar para o modo timer, iniciar timer, pausar timer após 10 segundos e resetar timer.
+- Voltar para mmodo relógio e Deixar relógio rodando por 15 segundos
