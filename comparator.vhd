@@ -1,36 +1,34 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
-use ieee.numeric_std.all;
+use IEEE.numeric_std.all;
 
 entity comparator is
-  	generic (
-    	N : integer := 6  -- número de bits (padrão = 6)
-  	);
+    generic (N : integer := 6);
     port (
-        A	: in unsigned(N-1 downto 0);
-        B	: in unsigned(N-1 downto 0);
-        less	: out STD_LOGIC;
-        equal	: out STD_LOGIC;
-        greater	: out STD_LOGIC;
-	);
-end comparator;
+        A       : in  unsigned(N-1 downto 0);
+        B       : in  unsigned(N-1 downto 0);
+        less    : out std_logic;
+        equal   : out std_logic;
+        greater : out std_logic
+    );
+end entity comparator;
 
-architecture behavior of comparator is
+architecture rtl of comparator is
 begin
-	process (A,B)
+    process(A, B)
     begin
-    	if A>B then
-        	greater <= '1';
-            equal <= '0';
-            less <= '0';
-        else if A<B then
-        	greater <= '0';
-            equal <= '0';
-            less <= '1';
+        if A < B then
+            less    <= '1';
+            equal   <= '0';
+            greater <= '0';
+        elsif A = B then
+            less    <= '0';
+            equal   <= '1';
+            greater <= '0';
         else
-        	greater <= '0';
-            equal <= '1';
-            less <= '0';
+            less    <= '0';
+            equal   <= '0';
+            greater <= '1';
         end if;
     end process;
-end behavior;
+end architecture rtl;

@@ -7,7 +7,7 @@ entity demux_1x2 is
     	din	: in STD_LOGIC;
         sel : in STD_LOGIC;
         A : out STD_LOGIC;
-      	B : out STD_LOGIC;
+      	B : out STD_LOGIC
 	);
 end demux_1x2;
 
@@ -23,4 +23,4 @@ begin
             B <= din;
         end if;
     end process;
-end demux_1x2;
+end behavior;

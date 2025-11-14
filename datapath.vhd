@@ -125,14 +125,14 @@ begin
         );
         
     -- comparators
-    comp_hr0: entity work.comparator
+        comp_hr0: entity work.comparator
         generic map (N => 6)
         port map(
             A => to_unsigned(hr_max, 6),
             B => hr0,
             less => comp_hr0_less,
             equal => open,
-            greater => open,
+            greater => open
         );
     
     comp_min0: entity work.comparator
@@ -142,7 +142,7 @@ begin
             B => min0,
             less => comp_min0_less,
             equal => open,
-            greater => open,
+            greater => open
         );
     
     comp_s0: entity work.comparator
@@ -152,7 +152,7 @@ begin
             B => s0,
             less => comp_s0_less,
             equal => open,
-            greater => open,
+            greater => open
         );
         
     comp_min1: entity work.comparator
@@ -162,7 +162,7 @@ begin
             B => min1,
             less => comp_min1_less,
             equal => open,
-            greater => open,
+            greater => open
         );
     
     comp_s1: entity work.comparator
@@ -172,28 +172,28 @@ begin
             B => s1,
             less => comp_s1_less,
             equal => open,
-            greater => open,
+            greater => open
         );
         
     comp_temp: entity work.comparator
-        generic map (N => 6)
+        generic map (N => 10)
         port map(
             A => to_unsigned(zero, 10),
             B => temp,
             less => open,
             equal => comp_temp_eq,
-            greater => open,
+            greater => open
         );
 
 
-	-- mux
+    -- mux
     mux0: entity work.mux_2x1
         generic map (N => 6)
         port map(
             A => hr0,
             B => min1,             
             sel => function_selection,   
-            X => num0                  
+            dout => num0                  
         );
 
     mux1: entity work.mux_2x1
@@ -202,7 +202,7 @@ begin
             A => min0,
             B => s1,
             sel => function_selection,
-            X => num1
+            dout => num1
         );
 
 
