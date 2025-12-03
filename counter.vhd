@@ -1,11 +1,3 @@
--- AULA 12 - TRABALHO PRATICO FINAL
--- arquivo: counter.vhd
--- Contador generico com valor maximo configuravel
--- Desenvolvido por:
--- Dante Junqueira Pedrosa
--- Maria Eduarda Jotadiemel Antunes
--- Laboratorio de Sistemas Digitais - Turma PN1
-
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
