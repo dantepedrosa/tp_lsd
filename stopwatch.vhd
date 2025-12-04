@@ -45,7 +45,9 @@ begin
     sec_units_over <= '1' when unsigned(q_sec_units) = 9 else '0';
     sec_tens_over  <= '1' when unsigned(q_sec_tens)  = 5 else '0';
     min_units_over <= '1' when unsigned(q_min_units) = 9 else '0';
-    min_tens_over  <= '1' when unsigned(q_min_tens)  = 5 else '0';
+    min_tens_over  <= '1' when unsigned(q_min_tens)  = 5 else '0'; -- Inutilizado
+    
+    -- Para resetar corretamente os minutos
     one_minute_pulse <= sec_tens_over AND sec_units_over;
     ten_minute_pulse <= min_units_over AND one_minute_pulse;
 
