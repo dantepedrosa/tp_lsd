@@ -1,3 +1,11 @@
+-- TRABALHO PRÁTICO FINAL
+-- arquivo: mux_display.vhd
+-- Combinacao de multiplexador com display para facilitar instanciacao
+-- Desenvolvido por:
+-- Dante Junqueira Pedrosa
+-- Maria Eduarda Jotadiemel Antunes
+-- Laboratório de Sistemas Digitais - Turma PN1
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;

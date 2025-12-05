@@ -1,12 +1,10 @@
---
--- BCD to 7-Segment Decoder: Implemented as combinatorial circuit.
--- Outputs are active low; Hex outputs are included. The SSEG format
--- is ABCDEFG (segA, segB etc.)
---
--- Required signals:
--- BCD_IN: in std_logic_vector(3 downto 0);
--- SSEG: out std_logic_vector(6 downto 0);
---
+-- TRABALHO PRÁTICO FINAL
+-- arquivo: decoder.vhd
+-- Decodificador BCD para 7 segmentos
+-- Desenvolvido por:
+-- Dante Junqueira Pedrosa
+-- Maria Eduarda Jotadiemel Antunes
+-- Laboratório de Sistemas Digitais - Turma PN1
 -- Exemplo retirado do livro VHDL Caipira
 
 library IEEE;

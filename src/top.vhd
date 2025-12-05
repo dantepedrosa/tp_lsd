@@ -1,3 +1,12 @@
+-- TRABALHO PRÁTICO FINAL
+-- arquivo: top.vhd
+-- Arquivo principal que integra relógio, cronômetro, FSM e multiplexador de displays
+-- Desenvolvido para utilização no kit Altera DE2
+-- Desenvolvido por:
+-- Dante Junqueira Pedrosa
+-- Maria Eduarda Jotadiemel Antunes
+-- Laboratório de Sistemas Digitais - Turma PN1
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;

@@ -1,4 +1,4 @@
--- AULA 12 - TRABALHO PRÁTICO FINAL
+-- TRABALHO PRÁTICO FINAL
 -- arquivo: mux_2x1.vhd
 -- Multiplexador 2x1 genérico
 -- Desenvolvido por:

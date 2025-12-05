@@ -1,19 +1,30 @@
+-- TRABALHO PRÁTICO FINAL
+-- arquivo: fsm.vhd
+-- Máquina de estados finitos para controle do relógio e cronômetro
+-- Esta máquina de estados cicla entre os estados, habilitando os demais componentes
+-- Desenvolvido por:
+-- Dante Junqueira Pedrosa
+-- Maria Eduarda Jotadiemel Antunes
+-- Laboratório de Sistemas Digitais - Turma PN1
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
 entity fsm is
     port (
-        btn_mode    : in std_logic;
-        btn_action  : in std_logic;
-        btn_set_rst : in std_logic;
+        -- Entradas da FSM
+        btn_mode    : in std_logic;     -- Botão para mudar entre relógio e cronômetro
+        btn_action  : in std_logic;     -- Botão para iniciar/pausar cronômetro e incrementar tempo
+        btn_set_rst : in std_logic;     -- Botão para ajustar ou resetar
         clk         : in std_logic;
 
-        watch_mode  : out std_logic;
-        stpwtch_en  : out std_logic;
-        rst_stpwtch : out std_logic;
-        set_hour    : out std_logic;
-        set_min     : out std_logic
+        -- Saídas da FSM para controle
+        watch_mode  : out std_logic;    -- Indica modo relógio (1) ou cronômetro (0)
+        stpwtch_en  : out std_logic;    -- Habilita o cronômetro
+        rst_stpwtch : out std_logic;    -- Reseta o cronômetro
+        set_hour    : out std_logic;    -- Ajusta a hora
+        set_min     : out std_logic     -- Ajusta o minuto
     );
 end fsm;
 

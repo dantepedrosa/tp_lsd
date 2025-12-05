@@ -1,15 +1,25 @@
+-- TRABALHO PRÁTICO FINAL
+-- arquivo: watch.vhd
+-- Relógio com funcionalidade de ajuste de horas e minutos
+-- Desenvolvido por:
+-- Dante Junqueira Pedrosa
+-- Maria Eduarda Jotadiemel Antunes
+-- Laboratório de Sistemas Digitais - Turma PN1
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
 entity watch is
     port (
-        clock     : in  std_logic;
-        reset     : in  std_logic;
-        inc_time  : in  std_logic;
-        set_min   : in  std_logic;
-        set_hour  : in  std_logic;
+        -- Entradas do relogio
+        clock     : in  std_logic;      -- Clock de 1 pulso por minuto
+        reset     : in  std_logic;      -- Sinal para resetar relógio
+        inc_time  : in  std_logic;      -- Sinal para incrementar horas ou minutos
+        set_min   : in  std_logic;      -- Habilita edicao de minutos
+        set_hour  : in  std_logic;      -- Habilita edicao de horas
 
+        -- Saidas do relogio
         min_units : out std_logic_vector(3 downto 0);
         min_tens  : out std_logic_vector(3 downto 0);
         hour_units : out std_logic_vector(3 downto 0);
@@ -44,6 +54,7 @@ begin
     inc_hours   <= (inc_time AND set_hour) OR cout_min_tens;
     
     -- Para lidar com reset complexo das horas
+    -- Reseta as horas ao chegar no 24
     reset_hours <= 
     '1' when (
         (inc_hours = '1') and
@@ -52,6 +63,7 @@ begin
     )
     else '0';
 
+    -- UNIDADES DE MINUTOS
     min_units_counter : entity work.counter
         generic map (
             N => 4,
@@ -65,6 +77,7 @@ begin
             COUT  => cout_min_units
         );
 
+    -- DEZENAS DE MINUTOS
     min_tens_counter : entity work.counter
         generic map (
             N => 4,
@@ -78,6 +91,7 @@ begin
             COUT  => cout_min_tens
         );
 
+    -- UNIDADES DE HORAS
     hour_units_counter : entity work.counter
         generic map (
             N => 4,
@@ -91,6 +105,7 @@ begin
             COUT  => cout_hour_units
         );
 
+    -- DEZENAS DE HORAS
     hour_tens_counter : entity work.counter
         generic map (
             N => 4,
@@ -104,6 +119,7 @@ begin
             COUT  => cout_hour_tens
         );
 
+    -- saidas finais
     min_units <= q_min_units;
     min_tens  <= q_min_tens;
     hour_units <= q_hour_units;

@@ -1,3 +1,11 @@
+-- TRABALHO PRÁTICO FINAL
+-- arquivo: tb_stpwtch.vhd
+-- Testbench para o arquivo stopwatch.vhd
+-- Desenvolvido por:
+-- Dante Junqueira Pedrosa
+-- Maria Eduarda Jotadiemel Antunes
+-- Laboratório de Sistemas Digitais - Turma PN1
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;

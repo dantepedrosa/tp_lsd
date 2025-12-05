@@ -1,3 +1,11 @@
+-- TRABALHO PRÁTICO FINAL
+-- arquivo: counter.vhd
+-- Contador genérico
+-- Desenvolvido por:
+-- Dante Junqueira Pedrosa
+-- Maria Eduarda Jotadiemel Antunes
+-- Laboratório de Sistemas Digitais - Turma PN1
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;

@@ -1,3 +1,11 @@
+-- TRABALHO PRÁTICO FINAL
+-- arquivo: auxiliary_clock.vhd
+-- Relógio auxiliar com pulsos de 1 segundo e 1 minuto
+-- Desenvolvido por:
+-- Dante Junqueira Pedrosa
+-- Maria Eduarda Jotadiemel Antunes
+-- Laboratório de Sistemas Digitais - Turma PN1
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
@@ -45,14 +53,12 @@ begin
         port map (
             CLEAR => '0',
             CLK   => clk,
-            COUNT => cout_1s,  -- so conta quando completar 1s
+            COUNT => cout_1s,  -- conta a cada segundo
             Q     => open,
             COUT  => cout_min
         );
 
-    ----------------------------------------------------------------
-    -- Pulsos diretamente dos COUTs
-    ----------------------------------------------------------------
+    -- saidas
     pulse_1s   <= cout_1s;
     pulse_1min <= cout_min;
 

@@ -1,3 +1,11 @@
+-- TRABALHO PRÁTICO FINAL
+-- arquivo: tb_fsm.vhd
+-- Testbench para o arquivo FSM
+-- Desenvolvido por:
+-- Dante Junqueira Pedrosa
+-- Maria Eduarda Jotadiemel Antunes
+-- Laboratório de Sistemas Digitais - Turma PN1
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
@@ -24,11 +32,11 @@ architecture sim of tb_fsm is
 begin
 
     -----------------------------------------------------------------------
-    -- CLOCK PROCESS (com tempo controlado para encerrar simulacao)
+    -- CLOCK PROCESS
     -----------------------------------------------------------------------
     clk_process : process
     begin
-        while now < 300*CLK_PERIOD loop  -- Ajuste o número de ciclos necessários
+        while now < 300*CLK_PERIOD loop  
             clk <= '0';
             wait for CLK_PERIOD/2;
             clk <= '1';

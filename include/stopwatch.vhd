@@ -1,13 +1,23 @@
+-- TRABALHO PRÁTICO FINAL
+-- arquivo: stopwatch.vhd
+-- Cronômetro com funcionalidade de pausar, continuar e resetar, com limite de 1 hora
+-- Desenvolvido por:
+-- Dante Junqueira Pedrosa
+-- Maria Eduarda Jotadiemel Antunes
+-- Laboratório de Sistemas Digitais - Turma PN1
+
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
 entity stopwatch is
     port (
-        clock     : in  std_logic;
-        count     : in  std_logic;
-        reset     : in  std_logic;
+        -- Entradas do cronômetro
+        clock     : in  std_logic;      -- Clock de 1 Hz
+        count     : in  std_logic;      -- Sinal para iniciar/pausar contagem
+        reset     : in  std_logic;      -- Sinal para resetar cronômetro
 
+        -- Saidas do cronômetro
         sec_units : out std_logic_vector(3 downto 0);
         sec_tens  : out std_logic_vector(3 downto 0);
         min_units : out std_logic_vector(3 downto 0);
@@ -44,10 +54,7 @@ begin
     one_minute_pulse <= sec_tens_over AND sec_units_over;
     ten_minute_pulse <= min_units_over AND one_minute_pulse;
 
-    -------------------------------------------------------------------
-    -- Contadores (CLEAR agora ligado diretamente ao reset)
-    -------------------------------------------------------------------
-
+    -- Unidades de segundos
     sec_units_counter : entity work.counter
         generic map (
             N => 4,
@@ -61,6 +68,7 @@ begin
             COUT  => cout_sec_units
         );
 
+    -- Dezenas de segundos
     sec_tens_counter : entity work.counter
         generic map (
             N => 4,
@@ -74,6 +82,7 @@ begin
             COUT  => cout_sec_tens
         );
 
+    -- Unidades de minutos
     min_units_counter : entity work.counter
         generic map (
             N => 4,
@@ -87,6 +96,7 @@ begin
             COUT  => cout_min_units
         );
 
+    -- Dezenaas de minutos
     min_tens_counter : entity work.counter
         generic map (
             N => 4,
