@@ -4,7 +4,7 @@ use IEEE.numeric_std.all;
 
 entity top_watch is
     port (
-        KEY   : in  std_logic_vector(2 downto 0);  -- botões de entrada
+        SW   : in  std_logic_vector(2 downto 0);  -- botões de entrada
         HEX0  : out std_logic_vector(6 downto 0);  -- displays 7 segmentos
         HEX1  : out std_logic_vector(6 downto 0);
         HEX2  : out std_logic_vector(6 downto 0);
@@ -44,9 +44,9 @@ begin
     -----------------------------------------------------------------------
     fsm_inst : entity work.fsm
         port map(
-            btn_mode    => KEY(0),
-            btn_action  => KEY(1),
-            btn_set_rst => KEY(2),
+            btn_mode    => SW(0),
+            btn_action  => SW(1),
+            btn_set_rst => SW(2),
             clk         => CLOCK_50,
             watch_mode  => watch_mode,
             stpwtch_en  => stpwtch_en,
@@ -62,7 +62,7 @@ begin
         port map(
             clock      => pulse_1min,  -- incrementa a cada minuto
             reset      => rst_stpwtch,
-            inc_time   => KEY(1),
+            inc_time   => SW(1),
             set_min    => set_min,
             set_hour   => set_hour,
             min_units  => min_units,
