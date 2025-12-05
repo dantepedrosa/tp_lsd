@@ -19,7 +19,6 @@ end fsm;
 
 architecture rtl of fsm is
 
-    -- NOMEACAO DOS ESTADOS
     type state_type is (
         ST_RELOGIO,
         ST_CRONOMETRO_STOP,
@@ -29,100 +28,136 @@ architecture rtl of fsm is
     );
 
     signal PS, NS : state_type;
-    -- Optional: for waveform viewing
     signal PS_vec : std_logic_vector(2 downto 0);
 
-   
-    
+    -- flags de borda detectada
+    signal mode_rise    : std_logic := '0';
+    signal action_rise  : std_logic := '0';
+    signal set_rst_rise : std_logic := '0';
+
 begin
 
- 	PS_vec <= "000" when PS = ST_RELOGIO else
+    PS_vec <= "000" when PS = ST_RELOGIO else
               "001" when PS = ST_CRONOMETRO_STOP else
               "010" when PS = ST_CRONOMETRO_RUN else
               "011" when PS = ST_AJUSTA_HORA else
-              "100"; -- ST_AJUSTA_MIN
+              "100";
 
-    sync_p: process (clk)
+    --------------------------------------------------------------------
+    -- Process que sincroniza a FSM e detecta bordas dos botoes
+    --------------------------------------------------------------------
+    sync_p: process(clk)
+        variable mode_old    : std_logic := '0';
+        variable action_old  : std_logic := '0';
+        variable set_rst_old : std_logic := '0';
     begin
         if rising_edge(clk) then
+
+            -- FSM
             PS <= NS;
+
+            ------------------------------------------------------------
+            -- Deteccao da borda dos botoes (sinal antigo -> variavel)
+            ------------------------------------------------------------
+            if mode_old = '0' and btn_mode = '1' then
+                mode_rise <= '1';
+            else
+                mode_rise <= '0';
+            end if;
+
+            if action_old = '0' and btn_action = '1' then
+                action_rise <= '1';
+            else
+                action_rise <= '0';
+            end if;
+
+            if set_rst_old = '0' and btn_set_rst = '1' then
+                set_rst_rise <= '1';
+            else
+                set_rst_rise <= '0';
+            end if;
+
+            -- atualiza estado antigo
+            mode_old    := btn_mode;
+            action_old  := btn_action;
+            set_rst_old := btn_set_rst;
+
         end if;
     end process sync_p;
 
-    comb_p: process (PS, btn_mode, btn_action, btn_set_rst)
+    --------------------------------------------------------------------
+    -- Logica combinacional da FSM
+    --------------------------------------------------------------------
+    comb_p: process (PS, mode_rise, action_rise, set_rst_rise)
     begin
-        -- Inicializacao no modo relogio
         watch_mode  <= '1';
         stpwtch_en  <= '0';
         rst_stpwtch <= '0';
         set_hour    <= '0';
         set_min     <= '0';
-        
+
         case PS is
 
-            -- ESTADO - RELOGIO CONTANDO
             when ST_RELOGIO =>
                 watch_mode <= '1';
                 set_min    <= '0';
 
-                if (rising_edge(btn_set_rst)) then
+                if set_rst_rise = '1' then
                     NS <= ST_AJUSTA_HORA;
-                elsif (rising_edge(btn_mode)) then
+                elsif mode_rise = '1' then
                     NS <= ST_CRONOMETRO_STOP;
-                end if;
-
-            
-            -- ESTADO - CRONOMETRO PARADO
-            when ST_CRONOMETRO_STOP =>
-                watch_mode <= '0';
-                stpwtch_en <= '0';
-                rst_stpwtch <= '0';
-
-                if (rising_edge(btn_action)) then
-                    NS <= ST_CRONOMETRO_RUN;
-                elsif (rising_edge(btn_set_rst)) then
-                    rst_stpwtch <= '1';
-                    NS <= ST_CRONOMETRO_STOP;
-                elsif (rising_edge(btn_mode)) then
+                else
                     NS <= ST_RELOGIO;
                 end if;
 
-            -- ESTADO - CRONOMETRO CONTANDO
+            when ST_CRONOMETRO_STOP =>
+                watch_mode <= '0';
+                stpwtch_en <= '0';
+
+                if action_rise = '1' then
+                    NS <= ST_CRONOMETRO_RUN;
+                elsif set_rst_rise = '1' then
+                    rst_stpwtch <= '1';
+                    NS <= ST_CRONOMETRO_STOP;
+                elsif mode_rise = '1' then
+                    NS <= ST_RELOGIO;
+                else
+                    NS <= ST_CRONOMETRO_STOP;
+                end if;
+
             when ST_CRONOMETRO_RUN =>
                 watch_mode <= '0';
                 stpwtch_en <= '1';
 
-                if (rising_edge(btn_action)) then
+                if action_rise = '1' then
                     NS <= ST_CRONOMETRO_STOP;
-                elsif (rising_edge(btn_set_rst)) then
+                elsif set_rst_rise = '1' then
                     rst_stpwtch <= '1';
                     NS <= ST_CRONOMETRO_STOP;
-                elsif (rising_edge(btn_mode)) then
+                elsif mode_rise = '1' then
                     NS <= ST_RELOGIO;
+                else
+                    NS <= ST_CRONOMETRO_RUN;
                 end if;
 
-            -- ESTADO - SETAR HORAS
-            -- Obs.: Apenas habilita a edicao de horas,
-            -- incremento feito diretamente pelo sinal do botao
             when ST_AJUSTA_HORA =>
-                set_hour   <= '1';
+                set_hour <= '1';
 
-                if (rising_edge(btn_set_rst)) then
+                if set_rst_rise = '1' then
+                    NS <= ST_AJUSTA_MIN;
+                else
+                    NS <= ST_AJUSTA_HORA;
+                end if;
+
+            when ST_AJUSTA_MIN =>
+                set_min <= '1';
+
+                if set_rst_rise = '1' then
+                    NS <= ST_RELOGIO;
+                else
                     NS <= ST_AJUSTA_MIN;
                 end if;
 
-            -- ESTADO - SETAR MINUTOS
-            -- Obs.: Apenas habilita a edicao de minutos,
-            -- incremento feito diretamente pelo sinal do botao
-            when ST_AJUSTA_MIN =>
-                set_hour   <= '0';
-                set_min    <= '1';
-
-                if (rising_edge(btn_set_rst)) then
-                    NS <= ST_RELOGIO;
-                end if;
-
-            -- ESTADO - PADRAO
             when others =>
                 NS <= ST_RELOGIO;
 
