@@ -105,28 +105,5 @@ begin
             sseg4     => HEX3
         );
 
-    -----------------------------------------------------------------------
-    -- Multiplexação com blink para ajuste de hora/minuto
-    -----------------------------------------------------------------------
-    mux_display_inst : entity work.mux_display_blink
-        port map(
-            w_min1_q  => min_units,
-            w_min2_q  => min_tens,
-            w_hour1_q => hour_units,
-            w_hour2_q => hour_tens,
-            stp_sec1_q => sec_units,
-            stp_sec2_q => sec_tens,
-            stp_min1_q => stp_min_units,
-            stp_min2_q => stp_min_tens,
-            watch_mode => watch_mode,
-            set_hour   => set_hour,
-            set_min    => set_min,
-            pulse_1s   => pulse_1s,
-            sseg1 => HEX0,
-            sseg2 => HEX1,
-            sseg3 => HEX2,
-            sseg4 => HEX3
-        );
-
 
 end architecture;
