@@ -25,19 +25,12 @@ architecture rtl of stopwatch is
     signal cout_min_units, cout_min_tens : std_logic;
 
     -- Comparadores para deteccao de limite
-    signal sec_units_over 	: std_logic;
-    signal sec_tens_over  	: std_logic;
-    signal min_units_over 	: std_logic;
-    signal min_tens_over  	: std_logic;
+    signal sec_units_over   : std_logic;
+    signal sec_tens_over    : std_logic;
+    signal min_units_over   : std_logic;
+    signal min_tens_over    : std_logic;
     signal one_minute_pulse : std_logic;
-    signal ten_minute_pulse	: std_logic;
-
-    
-    -- Comparadores para limpar os contadores
-    signal sec_units_clear : std_logic;
-    signal sec_tens_clear  : std_logic;
-    signal min_units_clear : std_logic;
-    signal min_tens_clear  : std_logic;
+    signal ten_minute_pulse : std_logic;
 
 begin
 
@@ -51,12 +44,9 @@ begin
     one_minute_pulse <= sec_tens_over AND sec_units_over;
     ten_minute_pulse <= min_units_over AND one_minute_pulse;
 
-    
-    -- Comparacoes para limpar os contadores
-    sec_units_clear <= reset;
-    sec_tens_clear  <= reset;
-    min_units_clear <= reset;
-    min_tens_clear  <= reset;
+    -------------------------------------------------------------------
+    -- Contadores (CLEAR agora ligado diretamente ao reset)
+    -------------------------------------------------------------------
 
     sec_units_counter : entity work.counter
         generic map (
@@ -64,9 +54,9 @@ begin
             MAX_VALUE => 9
         )
         port map (
-            CLEAR => sec_units_clear,
+            CLEAR => reset,     -- reset assincrono ativo em '1'
             CLK   => clock,
-            COUNT => count,
+            COUNT => count,     -- habilita contagem quando '1'
             Q     => q_sec_units,
             COUT  => cout_sec_units
         );
@@ -77,7 +67,7 @@ begin
             MAX_VALUE => 5
         )
         port map (
-            CLEAR => sec_tens_clear,
+            CLEAR => reset,
             CLK   => clock,
             COUNT => sec_units_over,
             Q     => q_sec_tens,
@@ -90,7 +80,7 @@ begin
             MAX_VALUE => 9
         )
         port map (
-            CLEAR => min_units_clear,
+            CLEAR => reset,
             CLK   => clock,
             COUNT => one_minute_pulse,
             Q     => q_min_units,
@@ -103,13 +93,14 @@ begin
             MAX_VALUE => 5
         )
         port map (
-            CLEAR => min_tens_clear,
+            CLEAR => reset,
             CLK   => clock,
-           	COUNT => ten_minute_pulse,
+            COUNT => ten_minute_pulse,
             Q     => q_min_tens,
             COUT  => cout_min_tens
         );
 
+    -- Saidas finais
     sec_units <= q_sec_units;
     sec_tens  <= q_sec_tens;
     min_units <= q_min_units;

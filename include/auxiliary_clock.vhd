@@ -1,51 +1,59 @@
-library ieee;
-use ieee.std_logic_1164.all;
-use ieee.numeric_std.all;
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
 
 entity auxiliary_clock is
     port (
-        clk       : in  std_logic;    -- clock principal (50 MHz)
-        pulse_1s  : out std_logic;    -- pulso a cada 1 segundo
-        pulse_1min: out std_logic     -- pulso a cada 60 segundos
+        clk        : in  std_logic;
+        pulse_1s   : out std_logic;
+        pulse_1min : out std_logic
     );
-end entity;
+end auxiliary_clock;
 
 architecture rtl of auxiliary_clock is
-    -- contador para gerar pulso de 1 segundo
-    signal cnt_1s  : unsigned(25 downto 0) := (others => '0');
-    signal p_1s    : std_logic := '0';
 
-    -- contador de segundos para gerar pulso de 1 minuto
-    signal sec_cnt : unsigned(5 downto 0) := (others => '0');
-    signal p_1min  : std_logic := '0';
+    -- sinais de saida dos counters
+    signal cout_1s  : std_logic;
+    signal cout_min : std_logic;
+
 begin
 
-    process(clk)
-    begin
-        if rising_edge(clk) then
-            -- default: sem pulso
-            p_1s <= '0';
-            p_1min <= '0';
+    ----------------------------------------------------------------
+    -- Contador de 1 segundo
+    ----------------------------------------------------------------
+    sec_counter_inst : entity work.counter
+        generic map (
+            N => 26,                       -- 2^26 = 67M
+            MAX_VALUE => 50_000_000 - 1    -- 1 segundo
+        )
+        port map (
+            CLEAR => '0',                  -- sempre ligado
+            CLK   => clk,
+            COUNT => '1',                  -- sempre contando
+            Q     => open,
+            COUT  => cout_1s
+        );
 
-            -- gerar pulso 1 segundo
-            if cnt_1s = 50_000_000-1 then
-                cnt_1s <= (others => '0');
-                p_1s <= '1';
+    ----------------------------------------------------------------
+    -- Contador de 60 segundos
+    ----------------------------------------------------------------
+    min_counter_inst : entity work.counter
+        generic map (
+            N => 6,            -- 2^6 = 64
+            MAX_VALUE => 59    -- 60 segundos
+        )
+        port map (
+            CLEAR => '0',
+            CLK   => clk,
+            COUNT => cout_1s,  -- so conta quando completar 1s
+            Q     => open,
+            COUT  => cout_min
+        );
 
-                -- gerar pulso 1 minuto após 60 segundos
-                if sec_cnt = 59 then
-                    sec_cnt <= (others => '0');
-                    p_1min <= '1';
-                else
-                    sec_cnt <= sec_cnt + 1;
-                end if;
-            else
-                cnt_1s <= cnt_1s + 1;
-            end if;
-        end if;
-    end process;
+    ----------------------------------------------------------------
+    -- Pulsos diretamente dos COUTs
+    ----------------------------------------------------------------
+    pulse_1s   <= cout_1s;
+    pulse_1min <= cout_min;
 
-    pulse_1s   <= p_1s;
-    pulse_1min <= p_1min;
-
-end architecture;
+end rtl;
