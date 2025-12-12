@@ -39,7 +39,7 @@ I can help you modify and extend the codebase:
 
 I can help ensure your design works correctly:
 
-- **Run existing testbenches**: Execute and analyze tb_fsm.vhd, tb_stpwtch.vhd, tb_watch.vhd
+- **Run existing testbenches**: Execute and analyze tb_fsm.vhd, tb_stopwatch.vhd, tb_watch.vhd
 - **Create new testbenches**: Design comprehensive tests for any module
 - **Analyze simulation results**: Interpret waveforms and verify functionality
 - **Edge case testing**: Test boundary conditions and unusual scenarios
@@ -129,7 +129,7 @@ Given the current project structure, I can specifically help with:
 
 ## 🛠️ Tools I Can Work With
 
-- **VHDL/Verilog**: Direct code editing and analysis
+- **VHDL**: Direct code editing and analysis
 - **ModelSim/GHDL**: Running simulations (if available)
 - **Quartus**: Understanding project structure and constraints
 - **Git**: Version control operations
@@ -165,7 +165,7 @@ Here are some concrete examples of what you might ask me to do:
 
 ### What I Cannot Do
 ❌ Physically program the FPGA board
-❌ Access proprietary synthesis tools without them being installed
+❌ Access proprietary synthesis tools directly without local installation
 ❌ Guarantee timing closure without running full synthesis
 ❌ Test on actual hardware (but can verify through simulation)
 
